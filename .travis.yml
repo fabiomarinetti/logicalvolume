@@ -1,0 +1,26 @@
+---
+language: python
+python:
+  - "3.6"
+
+env:
+  - GOOGLE_APPLICATION_CREDENTIALS=$TRAVIS_BUILD_DIR/secret.json SSH_USER=mpisellonio SSH_ID_FILE=$TRAVIS_BUILD_DIR/.ssh/id_rsa SCENARIO=gcp
+
+before_install:
+  # decrypt service-account-key
+  - openssl aes-256-cbc -K $encrypted_e2392ca1fc27_key -iv $encrypted_e2392ca1fc27_iv -in ${GOOGLE_APPLICATION_CREDENTIALS}.enc -out ${GOOGLE_APPLICATION_CREDENTIALS} -d
+
+install:
+  # install molecule and docker
+  - pip install molecule requests google-auth ansible-lint flake8
+ 
+  # create .ssh dir
+  - mkdir -p .ssh
+
+  # generate ssh key
+  - ssh-keygen -P '' -f ${SSH_ID_FILE} -C ${SSH_USER}
+
+script:
+  - molecule --version
+  - ansible --version
+  - molecule test --scenario-name=${SCENARIO}

@@ -1,0 +1,65 @@
+---
+# tasks file for fmarinetti.logicalvolume
+- name: install lvm2
+  package:
+    name: lvm2
+    state: present
+
+- name: "retrieve {{ device }} info"
+  parted:
+    device: "{{ device }}"
+    unit: KiB
+  register: device_info
+
+- debug:
+    msg: "{{ device_info }}"
+
+- name: "create {{ device }}{{ partno }} partition"
+  parted:
+    device: "{{ device }}"
+    number: "{{ partno }}"
+    state: present
+    part_start: "{% if device_info['partitions']|length != 0 %}{{ device_info['partitions'][-1]['end']+1 }}KiB{% else %}0%{% endif %}"
+    part_end: "{{ part_end }}"
+  notify:
+    - reboot host
+
+- meta: flush_handlers
+
+- name: "create the {{ vgname }} volume group"
+  lvg:
+    pvs: "{{ device }}{{ partno }}"
+    vg: "{{ vgname }}"
+    pesize: "8"
+    pv_options: '-Z y'
+    force: no
+    state: present
+
+- name: "create the {{ lvname }} logical volume"
+  lvol:
+    vg: "{{ vgname }}"
+    lv: "{{ lvname }}"
+    size: "{{ lvsize }}"
+    active: yes
+    force: no
+    state: present
+
+- name: "create a {{ fstype }} filesystem on lvm /dev/mapper/{{ vgname }}-{{ lvname }}"
+  filesystem:
+    fstype: "{{ fstype }}"
+    dev: "/dev/mapper/{{ vgname }}-{{ lvname }}"
+    force: no
+
+- name: "create {{ mountpoint }} directory"
+  file:
+    path: "{{ mountpoint }}"
+    state: directory
+    mode: '0755'
+
+- name: "mount /dev/mapper/{{ vgname }}-{{ lvname }} {{ fstype }} filesystem on {{ mountpoint }}"
+  mount:
+    path: "{{ mountpoint }}"
+    src: "/dev/mapper/{{ vgname }}-{{ lvname }}"
+    fstype: "{{ fstype }}"
+    opts: defaults
+    state: mounted
