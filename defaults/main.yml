@@ -1,0 +1,27 @@
+---
+# defaults file for fmarinetti.logicalvolume
+#
+# the end size of the new partition
+part_end: "100%"
+#
+# the partition sequential number
+partno: 1
+#
+# the device to partition
+device: "/dev/sda"
+#
+# the volume group name
+vgname: "ansible_vg"
+#
+# the logical volume name 
+lvname: "ansible_lv"
+#
+# the logical volume size
+lvsize: "100%VG"
+#
+# the filesystem type
+fstype: "ext4"
+#
+# the mountpoint where to mount the lv to
+# it is created if not existing
+mountpoint: "/mnt"

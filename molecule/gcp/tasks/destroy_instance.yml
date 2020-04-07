@@ -1,0 +1,19 @@
+- name: "delete instance {{ item.name }}"
+  gcp_compute_instance:
+    name: "{{ item.name }}"
+    zone: "{{ molecule_yml.driver.zone }}"
+    state: absent
+  register: instance
+
+- name: "delete storage disk {{ item.name }}-storage"
+  gcp_compute_disk:
+    name: "{{ item.name }}-storage"
+    zone: "{{ molecule_yml.driver.zone }}"
+    state: absent
+  register: new_disk
+
+- name: delete address
+  gcp_compute_address:
+    name: "{{ item.name }}"
+    region: "{{ molecule_yml.driver.region }}"
+    state: absent
