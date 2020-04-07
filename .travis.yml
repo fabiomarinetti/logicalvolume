@@ -8,7 +8,7 @@ env:
 
 before_install:
   # decrypt service-account-key
-  - openssl aes-256-cbc -K $encrypted_e2392ca1fc27_key -iv $encrypted_e2392ca1fc27_iv -in ${GOOGLE_APPLICATION_CREDENTIALS}.enc -out ${GOOGLE_APPLICATION_CREDENTIALS} -d
+   - openssl aes-256-cbc -K $encrypted_ab41b0c5a0bb_key -iv $encrypted_ab41b0c5a0bb_iv -in ${GOOGLE_APPLICATION_CREDENTIALS}.enc -out ${GOOGLE_APPLICATION_CREDENTIALS} -d
 
 install:
   # install molecule and docker
