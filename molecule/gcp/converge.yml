@@ -5,6 +5,6 @@
   vars:
     device: /dev/sdb
   tasks:
-    - name: "Include fmarinetti.logicalvolume"
+    - name: "Include logicalvolume"
       include_role:
-        name: "fmarinetti.logicalvolume"
+        name: "logicalvolume"
